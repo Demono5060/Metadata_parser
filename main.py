@@ -78,7 +78,7 @@ def parse(data: dict, show_hint: bool, show_secret: bool, show_rules: bool, dept
                                     show_rules=show_rules,
                                     show_secret=show_secret,
                                     is_primitive=is_primitive,
-                                    depth=depth + 1) + "\n"
+                                    depth=depth) + "\n"
             else:
                 result += formatter(data=value,
                                     show_hint=show_hint,
@@ -114,4 +114,4 @@ if __name__ == "__main__":
     parsed_data = parsed_data.replace('Match', "Регулярное выражение")
 
     print(parsed_data)
-    open("out.txt", 'w').write(parsed_data)
+    open("out.txt", 'w', encoding='cp1251').write(parsed_data)
