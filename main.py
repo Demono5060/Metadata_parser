@@ -72,21 +72,13 @@ def parse(data: dict, show_hint: bool, show_secret: bool, show_rules: bool, dept
         while data:
             name, value = data.popitem()
             is_primitive = value.get('is_primitive')
-            if is_primitive and (not value.get('is_secret') or show_secret):
-                result += formatter(data=value,
-                                    show_hint=show_hint,
-                                    show_rules=show_rules,
-                                    show_secret=show_secret,
-                                    is_primitive=is_primitive,
-                                    depth=depth) + "\n"
-            else:
-                result += formatter(data=value,
-                                    show_hint=show_hint,
-                                    show_rules=show_rules,
-                                    show_secret=show_secret,
-                                    is_primitive=is_primitive,
-                                    depth=depth)
-                result += '\n'
+            result += formatter(data=value,
+                                show_hint=show_hint,
+                                show_rules=show_rules,
+                                show_secret=show_secret,
+                                is_primitive=is_primitive,
+                                depth=depth) + "\n"
+            if not is_primitive:
                 result += parse(data=value.get('type'),
                                 show_hint=show_hint,
                                 show_secret=show_secret,
