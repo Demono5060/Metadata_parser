@@ -28,7 +28,7 @@ def formatter(data: dict, show_hint: bool, show_rules: bool, show_secret: bool, 
     result += f"{indentation}Описание поля: {data.get('label')}\n"
     if show_hint:
         result += f"{indentation}Подсказка: {data.get('hint')}\n"
-    if show_secret:
+    if show_secret and data.get('is_secret'):
         result += f"{indentation}Секретное поле\n"
     if is_primitive:
         result += f"{indentation}Тип поля: {data.get('type')}\n"
