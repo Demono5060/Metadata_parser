@@ -114,4 +114,4 @@ if __name__ == "__main__":
     parsed_data = parsed_data.replace('Match', "Регулярное выражение")
 
     print(parsed_data)
-    open("out.txt", 'w', encoding='cp1251').write(parsed_data)
+    open("out.txt", 'w', encoding='utf-8').write(parsed_data)
