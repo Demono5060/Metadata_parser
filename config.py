@@ -85,7 +85,7 @@ class Config(Parametrica):
     server_field = Field[ServerData]().label('Данные для подключения к серверу')
     created_time = Field[str](datetime.now().isoformat).label('Время создания конфига')
     custom_default = Field[str]('CustomDefault').label('Кастомное дефолт значение 1, которое никогда не появится')
-    custom_default = Field[CustomDefaultVal](CustomDefaultVal(default_1234=1111)).label('Кастомное дефолт значение 1')
+    custom_default_1 = Field[CustomDefaultVal](CustomDefaultVal(default_1234=1111)).label('Кастомное дефолт значение 1')
     custom_default_2 = Field[CustomDefaultVal](default_1234=2222).label('Кастомное дефолт значение 2')
 
 
