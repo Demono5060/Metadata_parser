@@ -1,6 +1,35 @@
 from config import config
 
 
+def readable_types(type_name: str) -> str:
+    """
+    Заменяет входящие типы на строки, указанные в словаре, если такой нет - возвращает исходный тип
+    :param type_name: Строка с названием типа
+    :return: Читабельное представление типа
+    """
+    readable = {'bool': 'Логическое значение (True/False)',
+                'str': 'Строковое значение',
+                'int': 'Целочисленное значение',
+                'float': 'Число с плавающей точкой (1.345))'}
+    readable_name = readable.get(type_name)
+    return readable_name if readable_name else type_name
+
+
+def readable_rule(rule: str) -> str:
+    """
+    Заменяет текст во входящих правилах
+    :param rule: Правило
+    :return: Измененное правило
+    """
+    readable = {'InRange': 'Диапазон числа',
+                'Min': 'Минимальное значение',
+                'Max': 'Максимальное значение',
+                'Match': 'Регулярное выражение'}
+    for key, value in readable.items():
+        rule = rule.replace(key, value)
+    return rule
+
+
 def formatter(data: dict, show_hint: bool, show_rules: bool, show_secret: bool, is_primitive=False, depth=0) -> str:
     """
     Преобразует входящее поле в поле вида:
@@ -25,18 +54,20 @@ def formatter(data: dict, show_hint: bool, show_rules: bool, show_secret: bool, 
     """
     indentation = "    " * depth
     result = f"{indentation}Название поля: {data.get('name')}\n"
-    result += f"{indentation}Описание поля: {data.get('label')}\n"
-    if show_hint:
+    if data.get('label'):
+        result += f"{indentation}Описание поля: {data.get('label')}\n"
+    if show_hint and data.get('hint'):
         result += f"{indentation}Подсказка: {data.get('hint')}\n"
-    if show_secret and data.get('is_secret'):
+    if show_secret and data.get('secret'):
         result += f"{indentation}Секретное поле\n"
     if is_primitive:
-        result += f"{indentation}Тип поля: {data.get('type')}\n"
-        if show_rules:
-            result += f"{indentation}Правила: {data.get('rule')}\n"
+        result += f"{indentation}Тип поля: {readable_types(data.get('type'))}\n"
+        if show_rules and data.get('rule'):
+            result += f"{indentation}Правила: {readable_rule(data.get('rule'))}\n"
     else:
         result += f"{indentation}Тип поля: класс({data.get('name')})\n"
-    result += f"{indentation}Значение по стандарту: {data.get('default')}\n"
+    if data.get('default'):
+        result += f"{indentation}Значение по стандарту: {data.get('default')}\n"
     return result
 
 
@@ -95,15 +126,5 @@ if __name__ == "__main__":
                         show_hint=show_hint,
                         show_secret=show_secret,
                         show_rules=show_rules)
-
-    parsed_data = parsed_data.replace(' None\n', ' Пусто\n')
-    parsed_data = parsed_data.replace(' int\n', " Целое чисто\n")
-    parsed_data = parsed_data.replace(' bool\n', " Логическое значение (True/False)\n")
-    parsed_data = parsed_data.replace(' str\n', " Строка\n")
-    parsed_data = parsed_data.replace('InRange', "Диапазон числа ")
-    parsed_data = parsed_data.replace('Min', "Минимальное значение")
-    parsed_data = parsed_data.replace('Max', "Максимальное значение")
-    parsed_data = parsed_data.replace('Match', "Регулярное выражение")
-
     print(parsed_data)
     open("out.txt", 'w', encoding='utf-8').write(parsed_data)
