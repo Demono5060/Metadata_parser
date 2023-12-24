@@ -125,10 +125,13 @@ def parse(data: dict, show_hint: bool, show_secret: bool, show_rules: bool, dept
 
 if __name__ == "__main__":
     arg_parser = ArgumentParser(prog='MetaData Parser')
-    arg_parser.add_argument('-sh', '--show-hint', default=False, required=False, action='store_true')
-    arg_parser.add_argument('-ss', '--show-secret', default=False, required=False, action='store_true')
-    arg_parser.add_argument('-sr', '--show-rules', default=False, required=False, action='store_true')
-    arg_parser.add_argument('-o', '--out', type=str, required=False, help='output filename')
+    arg_parser.add_argument('-sh', '--show-hint', default=False, required=False,
+                            action='store_true', help='отображать подсказки полей')
+    arg_parser.add_argument('-ss', '--show-secret', default=False, required=False,
+                            action='store_true', help='отображать скрытые поля')
+    arg_parser.add_argument('-sr', '--show-rules', default=False, required=False,
+                            action='store_true', help='отображать правила')
+    arg_parser.add_argument('-o', '--out', type=str, required=False, help='название файла для записи')
     args = arg_parser.parse_args()
     parsed_data = parse(data=config.__metadata__(),
                         show_hint=args.show_hint,
