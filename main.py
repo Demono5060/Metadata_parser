@@ -1,3 +1,6 @@
+from enum import Enum
+from argparse import ArgumentParser
+
 from config import config
 
 
@@ -67,7 +70,9 @@ def formatter(data: dict, show_hint: bool, show_rules: bool, show_secret: bool, 
     else:
         result += f"{indentation}Тип поля: класс({data.get('name')})\n"
     if data.get('default'):
-        result += f"{indentation}Значение по стандарту: {data.get('default')}\n"
+        if isinstance(data.get('default'), Enum):
+            data['default'] = data.get('default').value
+        result += f"{indentation}Значение по умолчанию: {data.get('default')}\n"
     return result
 
 
@@ -119,12 +124,16 @@ def parse(data: dict, show_hint: bool, show_secret: bool, show_rules: bool, dept
 
 
 if __name__ == "__main__":
-    show_hint = True
-    show_secret = True
-    show_rules = True
+    arg_parser = ArgumentParser(prog='MetaData Parser')
+    arg_parser.add_argument('-sh', '--show-hint', default=False, required=False, action='store_true')
+    arg_parser.add_argument('-ss', '--show-secret', default=False, required=False, action='store_true')
+    arg_parser.add_argument('-sr', '--show-rules', default=False, required=False, action='store_true')
+    arg_parser.add_argument('-o', '--out', type=str, required=False, help='output filename')
+    args = arg_parser.parse_args()
     parsed_data = parse(data=config.__metadata__(),
-                        show_hint=show_hint,
-                        show_secret=show_secret,
-                        show_rules=show_rules)
+                        show_hint=args.show_hint,
+                        show_secret=args.show_secret,
+                        show_rules=args.show_rules)
     print(parsed_data)
-    open("out.txt", 'w', encoding='utf-8').write(parsed_data)
+    if args.out:
+        open(args.out, 'w', encoding='utf-8').write(parsed_data)
