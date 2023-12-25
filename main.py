@@ -74,8 +74,15 @@ def formatter(data: dict, show_hint: bool, show_rules: bool, show_secret: bool, 
         result += f"{indentation}Тип поля: класс({data.get('name')})\n"
     if data.get('default'):
         if isinstance(data.get('default'), Enum):
+            obj = data.get('default').__class__
+            values = list(obj)
+            allowed_values = ""
+            for v in values:
+                allowed_values += f"{v.name}: {v.value}, "
             data['default'] = data.get('default').value
-        result += f"{indentation}Значение по умолчанию: {data.get('default')}\n"
+            result += f"{indentation}Значение по умолчанию: {data.get('default')} ({allowed_values[0:-2]})\n"
+        else:
+            result += f"{indentation}Значение по умолчанию: {data.get('default')}\n"
     return result
 
 
@@ -148,5 +155,6 @@ if __name__ == "__main__":
                         show_rules=args.show_rules,
                         show_primitive_only=args.primitive)
     print(parsed_data)
+    # print(dir(MyEnum))
     if args.out:
         open(args.out, 'w', encoding='utf-8').write(parsed_data)
