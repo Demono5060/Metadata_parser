@@ -119,7 +119,7 @@ def parse(data: dict, show_hint: bool, show_secret: bool, show_rules: bool, show
                                         show_rules=show_rules,
                                         show_secret=show_secret,
                                         is_primitive=is_primitive,
-                                        depth=depth) + "\n"
+                                        depth=depth * (not show_primitive_only)) + "\n"
                 if not is_primitive:
                     result += parse(data=value.get('type'),
                                     show_hint=show_hint,
@@ -147,7 +147,6 @@ if __name__ == "__main__":
                         show_secret=args.show_secret,
                         show_rules=args.show_rules,
                         show_primitive_only=args.primitive)
-    parsed_data = parsed_data.replace('    ', '') if args.primitive else parsed_data
     print(parsed_data)
     if args.out:
         open(args.out, 'w', encoding='utf-8').write(parsed_data)
