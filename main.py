@@ -1,7 +1,7 @@
 from enum import Enum
 from argparse import ArgumentParser
 
-from config import config
+from config import config, MyEnum
 
 
 def readable_types(type_name: str) -> str:
@@ -107,7 +107,7 @@ def parse(data: dict, show_hint: bool, show_secret: bool, show_rules: bool, show
     result = ''
     if data.get('is_primitive') is None:
         while data:
-            name, value = data.popitem()
+            _name, value = data.popitem()
             is_primitive = value.get('is_primitive')
             if not value.get('secret') or show_secret:
                 if not show_primitive_only or (show_primitive_only and is_primitive):
@@ -144,6 +144,7 @@ if __name__ == "__main__":
                         show_secret=args.show_secret,
                         show_rules=args.show_rules,
                         show_primitive_only=args.primitive)
+    parsed_data = parsed_data.replace('    ', '') if args.primitive else parsed_data
     print(parsed_data)
     if args.out:
         open(args.out, 'w', encoding='utf-8').write(parsed_data)
