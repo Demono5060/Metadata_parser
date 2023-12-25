@@ -76,7 +76,7 @@ def formatter(data: dict, show_hint: bool, show_rules: bool, show_secret: bool, 
     return result
 
 
-def parse(data: dict, show_hint: bool, show_secret: bool, show_rules: bool, depth=0) -> str:
+def parse(data: dict, show_hint: bool, show_secret: bool, show_rules: bool, show_primitive_only: bool, depth=0) -> str:
     """
     Разбирает метадату конфигураций, путем рекурсивного путешествия вглубь структуры,
     по ходу выполнения формирует строку вида:
@@ -100,6 +100,7 @@ def parse(data: dict, show_hint: bool, show_secret: bool, show_rules: bool, dept
     :param show_hint: Отображение описания полей
     :param show_secret: Отображение секретных полей
     :param show_rules: Отображение правил
+    :param show_primitive_only: Отображение только примитивных полей
     :param depth: коэффициент отступа (4 пробела * depth)
     :return: Распаршенные данные, в виде описания конфигурации
     """
@@ -109,17 +110,19 @@ def parse(data: dict, show_hint: bool, show_secret: bool, show_rules: bool, dept
             name, value = data.popitem()
             is_primitive = value.get('is_primitive')
             if not value.get('secret') or show_secret:
-                result += formatter(data=value,
-                                    show_hint=show_hint,
-                                    show_rules=show_rules,
-                                    show_secret=show_secret,
-                                    is_primitive=is_primitive,
-                                    depth=depth) + "\n"
+                if not show_primitive_only or (show_primitive_only and is_primitive):
+                    result += formatter(data=value,
+                                        show_hint=show_hint,
+                                        show_rules=show_rules,
+                                        show_secret=show_secret,
+                                        is_primitive=is_primitive,
+                                        depth=depth) + "\n"
                 if not is_primitive:
                     result += parse(data=value.get('type'),
                                     show_hint=show_hint,
                                     show_secret=show_secret,
                                     show_rules=show_rules,
+                                    show_primitive_only=show_primitive_only,
                                     depth=depth + 1)
     return result
 
@@ -132,12 +135,15 @@ if __name__ == "__main__":
                             action='store_true', help='отображать скрытые поля')
     arg_parser.add_argument('-sr', '--show-rules', default=False, required=False,
                             action='store_true', help='отображать правила')
+    arg_parser.add_argument('-p', '--primitive', default=False, required=False,
+                            action='store_true', help='отображать только примитивные поля')
     arg_parser.add_argument('-o', '--out', type=str, required=False, help='название файла для записи')
     args = arg_parser.parse_args()
     parsed_data = parse(data=config.__metadata__(),
                         show_hint=args.show_hint,
                         show_secret=args.show_secret,
-                        show_rules=args.show_rules)
+                        show_rules=args.show_rules,
+                        show_primitive_only=args.primitive)
     print(parsed_data)
     if args.out:
         open(args.out, 'w', encoding='utf-8').write(parsed_data)
