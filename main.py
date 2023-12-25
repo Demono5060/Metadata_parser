@@ -64,7 +64,10 @@ def formatter(data: dict, show_hint: bool, show_rules: bool, show_secret: bool, 
     if show_secret and data.get('secret'):
         result += f"{indentation}Секретное поле\n"
     if is_primitive:
-        result += f"{indentation}Тип поля: {readable_types(data.get('type'))}\n"
+        if data.get('is_iterable'):
+            result += f"{indentation}Тип поля: Список({readable_types(data.get('type'))})\n"
+        else:
+            result += f"{indentation}Тип поля: {readable_types(data.get('type'))}\n"
         if show_rules and data.get('rule'):
             result += f"{indentation}Правила: {readable_rule(data.get('rule'))}\n"
     else:
